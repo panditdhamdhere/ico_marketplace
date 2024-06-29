@@ -50,7 +50,9 @@ export const StateContextProvider = ({ children }) => {
 
       if (accounts.length) {
         setAddress(accounts[0]);
-        const provider = new ethers.providers.Web3Provider(connection);
+
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+
         const getbalance = await provider.getBalance(accounts[0]);
         const balance = ethers.utils.formatEther(getbalance);
         setAccountBalance(balance);
@@ -74,7 +76,8 @@ export const StateContextProvider = ({ children }) => {
 
       if (accounts.length) {
         setAddress(accounts[0]);
-        const provider = new ethers.providers.Web3Provider(connection);
+        // const provider = new ethers.providers.Web3Provider(connection);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
         const getbalance = await provider.getBalance(accounts[0]);
         const balance = ethers.utils.formatEther(getbalance);
         setAccountBalance(balance);
@@ -294,6 +297,9 @@ export const StateContextProvider = ({ children }) => {
       setLoader(true);
       notifySuccess("Purchasing Token...");
 
+      if (!tokenQuantity || !tokenAddress)
+        return notifyError("Data is missing");
+
       const address = await connectWallet();
       const contract = await icoMarketPlaceContract();
 
@@ -351,7 +357,8 @@ export const StateContextProvider = ({ children }) => {
       notifySuccess("Transaction is processing...");
       const address = connectWallet();
 
-      const contract = await icoMarketPlaceContract();
+      // const contract = await icoMarketPlaceContract();
+      const contract = await tokenContract(transferTokenData.tokenAddress);
       const _availableBal = await contract.balanceOf(address);
       const availableToken = ethers.utils.formatEther(_availableBal.toString());
 
