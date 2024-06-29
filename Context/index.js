@@ -1,4 +1,4 @@
-import { React, createContext, useState } from "react";
+import { React, createContext, useContext, useState } from "react";
 import { ethers } from "ethers";
 import WebModal from "web3modal";
 import toast from "react-hot-toast";
@@ -15,6 +15,7 @@ import {
   PINATA_API_KEY,
   PINATA_SECRET_KEY,
   ERC20Generator_ABI,
+  tokenContract,
 } from "./constants";
 
 const StateContext = createContext();
@@ -180,54 +181,253 @@ export const StateContextProvider = ({ children }) => {
     }
   };
 
-  const getAllIcoSaleToken = async (icoSale) => {
+  const getAllIcoSaleToken = async () => {
     try {
-      const { address, price } = icoSale;
-      if (!address || !price) return notifyError("Data is missing");
-
       setLoader(true);
-      notifySuccess("Creating ICO Sale...");
+      const address = await connectWallet();
+      const contract = await icoMarketPlaceContract();
 
-      await connectWallet();
+      if (address) {
+        const allIcoSaleToken = await contract.getAllTokens();
+
+        const tokenArray = Promise.all(
+          allIcoSaleToken.map(async (token) => {
+            const tokenContract = await tokenContract(token?.token);
+
+            const balance = await tokenContract.balanceOf(
+              ICO_MARKETPLACE_ADDRESS
+            );
+
+            return {
+              creator: token.creator,
+              token: token.token,
+              name: token.name,
+              symbol: token.symbol,
+              supported: token.supported,
+              price: ethers.utils.formatEther(token?.price.toString()),
+              icoSaleBal: ethers.utils.formatEther(balance.toString()),
+            };
+          })
+        );
+
+        setLoader(false);
+        return tokenArray;
+      }
     } catch (error) {
+      notifyError("Something Went Wrong!");
       console.log(error);
     }
   };
 
   const getAllUserIcoSaleToken = async () => {
     try {
+      setLoader(true);
+      const address = await connectWallet();
+      const contract = await icoMarketPlaceContract();
+
+      if (address) {
+        const allIcoSaleToken = await contract.getTokenCreatedBy(address);
+
+        const tokenArray = Promise.all(
+          allIcoSaleToken.map(async (token) => {
+            const tokenContract = await tokenContract(token?.token);
+
+            const balance = await tokenContract.balanceOf(
+              ICO_MARKETPLACE_ADDRESS
+            );
+
+            return {
+              creator: token.creator,
+              token: token.token,
+              name: token.name,
+              symbol: token.symbol,
+              supported: token.supported,
+              price: ethers.utils.formatEther(token?.price.toString()),
+              icoSaleBal: ethers.utils.formatEther(balance.toString()),
+            };
+          })
+        );
+
+        setLoader(false);
+        return tokenArray;
+      }
     } catch (error) {
+      notifyError("Something Went Wrong!");
       console.log(error);
     }
   };
 
-  const createIcoSale = async () => {
+  const createIcoSale = async (icoSale) => {
     try {
+      const { address, price } = icoSale;
+      if (!address || !price) return notifyError("Data is missing");
+
+      setLoader(true);
+      notifySuccess("Creating ICO Sale...");
+      await connectWallet();
+
+      const contract = await icoMarketPlaceContract();
+
+      const payAmount = ethers.utils.parseUnits(price.toString(), "ether");
+
+      const transaction = await contract.createIcoSale(address, payAmount, {
+        gasLimit: ethers.utils.hexlify(8000000),
+      });
+
+      await transaction.wait();
+
+      if (transaction.hash) {
+        setLoader(false);
+        setOpenCreateICO(false);
+        setRecall(recall + 1);
+      }
     } catch (error) {
+      setLoader(false);
+      setOpenCreateICO(false);
+      notifyError("Something Went Wrong!");
       console.log(error);
     }
   };
 
-  const buyToken = async () => {
+  const buyToken = async (tokenAddress, tokenQuantity) => {
     try {
+      setLoader(true);
+      notifySuccess("Purchasing Token...");
+
+      const address = await connectWallet();
+      const contract = await icoMarketPlaceContract();
+
+      const _tokenBal = await contract.getBalance(tokenAddress);
+      const _tokenDetails = await contract.getTokenDetails(tokenAddress);
+
+      const availableToken = ethers.utils.formatEther(
+        _tokenBal.toLocaleDateString()
+      );
+
+      if (availableToken > 0) {
+        const price =
+          ethers.utils.formatEther(_tokenDetails.price.toString()) *
+          Number(tokenQuantity);
+
+        const payAmount = ethers.utils.parseUnits(price.toString(), "ether");
+
+        const transaction = await contract.buyToken(
+          tokenAddress,
+          Number(tokenQuantity),
+          {
+            value: payAmount.toString(),
+            gasLimit: ethers.utils.hexlify(80000000),
+          }
+        );
+
+        await transaction.wait();
+        setLoader(false);
+        setRecall(recall + 1);
+        setOpenBuyToken(false);
+        notifySuccess("Transaction Completed Successfully");
+      } else {
+        setLoader(false);
+        setOpenBuyToken(false);
+        notifyError("Your Token balance is 0");
+      }
     } catch (error) {
+      setLoader(false);
+      setOpenBuyToken(false);
+      notifyError("Something Went Wrong!");
       console.log(error);
     }
   };
 
-  const transferToken = async () => {
+  const transferToken = async (transferTokenData) => {
     try {
+      if (
+        !transferToken.address ||
+        !transferToken.amount ||
+        !transferToken.tokenAddress
+      )
+        return notifyError("Data is missing!");
+
+      setLoader(true);
+      notifySuccess("Transaction is processing...");
+      const address = connectWallet();
+
+      const contract = await icoMarketPlaceContract();
+      const _availableBal = await contract.balanceOf(address);
+      const availableToken = ethers.utils.formatEther(_availableBal.toString());
+
+      if (availableToken > 1) {
+        const payAmount = ethers.utils.parseUnits(
+          transferTokenData.amount.toString(),
+          "ether"
+        );
+
+        const transaction = await contract.transfer(
+          transferTokenData.address,
+          payAmount,
+          {
+            gasLimit: ethers.utils.hexlify(80000000),
+          }
+        );
+
+        await transaction.wait();
+        setLoader(false);
+        setRecall(recall + 1);
+        setOpenTransferToken(false);
+        notifySuccess("Transaction completed Successfully");
+      } else {
+        setLoader(false);
+        setRecall(recall + 1);
+        setOpenTransferToken(false);
+        notifyError("Your Balance is 0");
+      }
     } catch (error) {
+      setLoader(false);
+      setRecall(recall + 1);
+      setOpenTransferToken(false);
+      notifyError("Something Went Wrong!");
       console.log(error);
     }
   };
 
-  const withdrawToken = async () => {
+  const withdrawToken = async (withdrawQuantity) => {
     try {
+      if (!withdrawQuantity.amount || !withdrawQuantity.token)
+        return notifyError("Data is missing!");
+
+      setLoader(true);
+      notifySuccess("Transaction is processing...");
+
+      const address = await connectWallet();
+      const contract = await icoMarketPlaceContract();
+
+      const payAmount = ethers.utils.parseUnits(
+        withdrawQuantity.amount.toString(),
+        "ether"
+      );
+
+      const transaction = await contract.withdrawToken(
+        withdrawQuantity.token,
+        payAmount,
+        {
+          gasLimit: ethers.utils.hexlify(8000000),
+        }
+      );
+
+      await transaction.wait();
+      setLoader(false);
+      setRecall(recall + 1);
+      setOpenWithdrawToken(false);
+      notifySuccess("Transaction completed successfully!");
     } catch (error) {
+      setLoader(false);
+      setRecall(recall + 1);
+      setOpenWithdrawToken(false);
+      notifyError("Something Went Wrong!");
       console.log(error);
     }
   };
 
   return <StateContext.Provider value={{}}>{children}</StateContext.Provider>;
 };
+
+export const useStateContext = () => useContext(StateContext);
