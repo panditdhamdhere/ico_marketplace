@@ -53,7 +53,7 @@ const TokenCreator = ({
         </div>
         <div className="button-box" style={{ marginTop: "1rem" }}>
           {address ? (
-            <Button name="Create Token" />
+            <Button name="Create Token" handleClick={() => createERC20(token, address, imageUrl)} />
           ) : (
             <Button name="Connect Wallet" handleClick={() => connectWallet()} />
           )}

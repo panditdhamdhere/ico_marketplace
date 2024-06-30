@@ -53,8 +53,8 @@ const index = () => {
     shortenAddress,
   } = useStateContext();
 
-  const notifySuccess = (msg) => toast.success(msg, { duration: 200 });
-  const notifyError = (msg) => toast.error(msg, { duration: 200 });
+  const notifySuccess = (msg) => toast.success(msg, { duration: 2000 });
+  const notifyError = (msg) => toast.error(msg, { duration: 2000 });
 
   // State
   const [allICOs, setAllICOs] = useState();

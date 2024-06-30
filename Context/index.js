@@ -1,6 +1,6 @@
 import { React, createContext, useContext, useEffect, useState } from "react";
 import { ethers } from "ethers";
-import WebModal from "web3modal";
+import Web3Modal from "web3modal";
 import toast from "react-hot-toast";
 
 // internal imports
@@ -34,8 +34,8 @@ export const StateContextProvider = ({ children }) => {
   const [openTokenCreator, setOpenTokenCreator] = useState(true);
   const [openCreateICO, setOpenCreateICO] = useState(false);
 
-  const notifySuccess = (msg) => toast.success(msg, { duration: 200 });
-  const notifyError = (msg) => toast.error(msg, { duration: 200 });
+  const notifySuccess = (msg) => toast.success(msg, { duration: 2000 });
+  const notifyError = (msg) => toast.error(msg, { duration: 2000 });
 
   // functions
 

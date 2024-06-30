@@ -13,18 +13,18 @@ const UploadLogo = ({
   PINATA_API_KEY,
   PINATA_SECRET_KEY,
 }) => {
-  const notifySuccess = (msg) => toast.success(msg, { duration: 200 });
-  const notifyError = (msg) => toast.error(msg, { duration: 200 });
+  const notifySuccess = (msg) => toast.success(msg, { duration: 2000 });
+  const notifyError = (msg) => toast.error(msg, { duration: 2000 });
 
   const uploadToIPFS = async (file) => {
     if (file) {
       try {
         setLoader(true);
-        const formData = new formData();
+        const formData = new FormData();
         formData.append("file", file);
 
         const response = await axios({
-          method: "post",
+          method: "POST",
           url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
           data: formData,
           maxBodyLength: "Infinity",
@@ -35,7 +35,7 @@ const UploadLogo = ({
           },
         });
 
-        const url = `https://gateway.pinata.cloud/ipfs${response.data.Ipfshash}`;
+        const url = `https://gateway.pinata.cloud/ipfs${response.data.IpfsHash}`;
 
         setImageUrl(url);
         setLoader(false);
@@ -48,8 +48,8 @@ const UploadLogo = ({
     }
   };
 
-  const onDrop = useCallback(async (acceptFile) => {
-    await uploadToIPFS(acceptFile[0]);
+  const onDrop = useCallback(async (acceptedFile) => {
+    await uploadToIPFS(acceptedFile[0]);
   });
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -68,15 +68,15 @@ const UploadLogo = ({
           />
         </div>
       ) : (
-        <div {...getRootProps}>
-          <label htmlFor="file" className="custum-file-upload">
+        <div {...getRootProps()}>
+          <label for="file" className="custum-file-upload">
             <div className="icon">
               <UploadICON />
             </div>
             <div className="text">
               <span>Click to upload Logo</span>
             </div>
-            <input type="file" id="file" {...getInputProps}/>
+            <input type="file" id="file" {...getInputProps()} />
           </label>
         </div>
       )}
