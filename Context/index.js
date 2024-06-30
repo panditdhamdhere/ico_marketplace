@@ -1,4 +1,4 @@
-import { React, createContext, useContext, useState } from "react";
+import { React, createContext, useContext, useEffect, useState } from "react";
 import { ethers } from "ethers";
 import WebModal from "web3modal";
 import toast from "react-hot-toast";
@@ -15,7 +15,6 @@ import {
   PINATA_API_KEY,
   PINATA_SECRET_KEY,
   ERC20Generator_ABI,
-  tokenContract,
 } from "./constants";
 
 const StateContext = createContext();
@@ -43,6 +42,7 @@ export const StateContextProvider = ({ children }) => {
   const checkIfWalletConnected = async () => {
     try {
       if (!window.ethereum) return notifyError("No Wallet Found");
+      await handleNetworkSwitch();
 
       const accounts = await window.ethereum.request({
         method: "eth_accounts",
@@ -66,9 +66,14 @@ export const StateContextProvider = ({ children }) => {
     }
   };
 
+  useEffect(() => {
+    checkIfWalletConnected();
+  }, [address]);
+
   const connectWallet = async () => {
     try {
       if (!window.ethereum) return notifyError("No Wallet Found");
+      await handleNetworkSwitch();
 
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
@@ -344,7 +349,7 @@ export const StateContextProvider = ({ children }) => {
     }
   };
 
-  const transferToken = async (transferTokenData) => {
+  const transferTokens = async (transferTokenData) => {
     try {
       if (
         !transferToken.address ||
@@ -434,7 +439,42 @@ export const StateContextProvider = ({ children }) => {
     }
   };
 
-  return <StateContext.Provider value={{}}>{children}</StateContext.Provider>;
+  return (
+    <StateContext.Provider
+      value={{
+        withdrawToken,
+        transferTokens,
+        buyToken,
+        createIcoSale,
+        getAllUserIcoSaleToken,
+        getAllIcoSaleToken,
+        createERC20,
+        connectWallet,
+        openBuyToken,
+        setOpenBuyToken,
+        openWithdrawToken,
+        setOpenWithdrawToken,
+        openTransferToken,
+        setOpenTransferToken,
+        openTokenCreator,
+        setOpenTokenCreator,
+        openCreateICO,
+        setOpenCreateICO,
+        address,
+        setAddress,
+        accountBalance,
+        loader,
+        setLoader,
+        currency,
+        PINATA_API_KEY,
+        PINATA_SECRET_KEY,
+        ICO_MARKETPLACE_ADDRESS,
+        shortenAddress,
+      }}
+    >
+      {children}
+    </StateContext.Provider>
+  );
 };
 
 export const useStateContext = () => useContext(StateContext);
