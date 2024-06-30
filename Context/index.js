@@ -31,7 +31,7 @@ export const StateContextProvider = ({ children }) => {
   const [openBuyToken, setOpenBuyToken] = useState(false);
   const [openWithdrawToken, setOpenWithdrawToken] = useState(false);
   const [openTransferToken, setOpenTransferToken] = useState(false);
-  const [openTokenCreator, setOpenTokenCreator] = useState(true);
+  const [openTokenCreator, setOpenTokenCreator] = useState(false);
   const [openCreateICO, setOpenCreateICO] = useState(false);
 
   const notifySuccess = (msg) => toast.success(msg, { duration: 2000 });
@@ -144,19 +144,31 @@ export const StateContextProvider = ({ children }) => {
         const history = localStorage.getItem("TOKEN_HISTORY");
 
         if (history) {
-          tokenHistory = JSON.parse(localStorage.getItem("TOKEN_HISTORY"));
-          tokenHistory.push(_token);
-          localStorage.setItem("TOKEN_HISTORY", tokenHistory);
-          setLoader(false);
-          setRecall(recall + 1);
-          setOpenTokenCreator(false);
-        } else {
-          tokenHistory.push(_token);
-          localStorage.setItem("TOKEN_HISTORY", tokenHistory);
-          setLoader(false);
-          setRecall(recall + 1);
-          setOpenTokenCreator(false);
+          tokenHistory = JSON.parse(history);
         }
+
+        tokenHistory.push(_token);
+
+        localStorage.setItem("TOKEN_HISTORY", JSON.stringify(tokenHistory));
+
+        setLoader(false);
+        setRecall(recall + 1);
+        setOpenTokenCreator(false);
+
+        // if (history) {
+        //   tokenHistory = JSON.parse(localStorage.getItem("TOKEN_HISTORY"));
+        //   tokenHistory.push(_token);
+        //   localStorage.setItem("TOKEN_HISTORY", tokenHistory);
+        //   setLoader(false);
+        //   setRecall(recall + 1);
+        //   setOpenTokenCreator(false);
+        // } else {
+        //   tokenHistory.push(_token);
+        //   localStorage.setItem("TOKEN_HISTORY", tokenHistory);
+        //   setLoader(false);
+        //   setRecall(recall + 1);
+        //   setOpenTokenCreator(false);
+        // }
       }
     } catch (error) {
       setLoader(false);
@@ -181,6 +193,7 @@ export const StateContextProvider = ({ children }) => {
         const signer = provider.getSigner();
 
         _deployContract(signer, account, name, symbol, supply, imgURL);
+        notifySuccess("Token Created Succuessfully!");
       }
     } catch (error) {
       setLoader(false);
