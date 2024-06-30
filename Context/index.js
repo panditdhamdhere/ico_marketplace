@@ -31,7 +31,7 @@ export const StateContextProvider = ({ children }) => {
   const [openBuyToken, setOpenBuyToken] = useState(false);
   const [openWithdrawToken, setOpenWithdrawToken] = useState(false);
   const [openTransferToken, setOpenTransferToken] = useState(false);
-  const [openTokenCreator, setOpenTokenCreator] = useState(false);
+  const [openTokenCreator, setOpenTokenCreator] = useState(true);
   const [openCreateICO, setOpenCreateICO] = useState(false);
 
   const notifySuccess = (msg) => toast.success(msg, { duration: 200 });
