@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
-import { Web3Modal } from "web3modal";
-
+// import { Web3Modal } from "web3modal";
+import Web3Modal from "web3modal";
 import ERC20Generator from "./ERC20Generator.json";
 import icoMarketPlace from "./icoMarketplace.json";
 
@@ -10,11 +10,18 @@ export const ERC20Generator_BYTE_CODE = ERC20Generator.bytecode;
 export const ICO_MARKETPLACE_ADDRESS =
   process.env.NEXT_PUBLIC_ICO_MARKETPLACE_ADDRESS;
 
-export const ICO_MARKETPLACE_ABI = icoMarketPlace.abi;
+export const ICO_MARKETPLACE_ABI = icoMarketPlace;
 
 // pinata key
 export const PINATA_API_KEY = process.env.NEXT_PUBLIC_PINATA_API_KEY;
 export const PINATA_SECRET_KEY = process.env.NEXT_PUBLIC_PINATA_SECRET_KEY;
+
+// console.log(
+//   ERC20Generator_ABI,
+//   ERC20Generator_BYTE_CODE,
+//   ICO_MARKETPLACE_ABI,
+//   ICO_MARKETPLACE_ADDRESS
+// );
 
 // NETWORKS
 const networks = {

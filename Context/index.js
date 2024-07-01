@@ -19,6 +19,8 @@ import {
 
 const StateContext = createContext();
 
+// console.log(icoMarketPlaceContract);
+
 export const StateContextProvider = ({ children }) => {
   // state variables
   const [address, setAddress] = useState();
@@ -291,12 +293,14 @@ export const StateContextProvider = ({ children }) => {
 
       const payAmount = ethers.utils.parseUnits(price.toString(), "ether");
 
-      const transaction = await contract.createIcoSale(address, payAmount, {
+      const transaction = await contract.createICOSale(address, payAmount, {
         gasLimit: ethers.utils.hexlify(8000000),
       });
 
+      // console.log(transaction);
+      //0xbd5ae07d648a62359A74EAED95c039644c2495ef
       await transaction.wait();
-
+      console.log(transaction);
       if (transaction.hash) {
         setLoader(false);
         setOpenCreateICO(false);
@@ -365,9 +369,9 @@ export const StateContextProvider = ({ children }) => {
   const transferTokens = async (transferTokenData) => {
     try {
       if (
-        !transferToken.address ||
-        !transferToken.amount ||
-        !transferToken.tokenAddress
+        !transferTokenData.address ||
+        !transferTokenData.amount ||
+        !transferTokenData.tokenAddress
       )
         return notifyError("Data is missing!");
 
