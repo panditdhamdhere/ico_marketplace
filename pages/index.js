@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 // internal imports
@@ -47,6 +47,7 @@ const index = () => {
     loader,
     setLoader,
     currency,
+    recall,
     PINATA_API_KEY,
     PINATA_SECRET_KEY,
     ICO_MARKETPLACE_ADDRESS,
@@ -73,6 +74,20 @@ const index = () => {
     notifySuccess("Address Copied successfully!");
   };
 
+  useEffect(() => {
+    if (address) {
+      getAllIcoSaleToken().then((token) => {
+        console.log("ALL", token);
+        setAllICOs(token);
+      });
+
+      getAllUserIcoSaleToken().then((token) => {
+        console.log("USER", token);
+        setAllUserICOs(token);
+      });
+    }
+  }, [address, recall]);
+
   return (
     <div>
       <Header
@@ -92,7 +107,43 @@ const index = () => {
         openICOMarketplace={openICOMarketplace}
       />
 
-      {openAllIcos && <ICOMarket />}
+      <div className="create">
+        <h1
+          style={{
+            fontSize: "2rem",
+          }}
+        >
+          All ICOs Marketplace
+        </h1>
+        {allICOs?.length != 0 && (
+          <Marketplace
+            array={allICOs}
+            shortenAddress={shortenAddress}
+            setBuyICO={setBuyICO}
+            setOpenBuyToken={setOpenBuyToken}
+            currency={currency}
+          />
+        )}
+        <Card
+          setOpenAllIcos={setOpenAllIcos}
+          setOpenTokenCreator={setOpenTokenCreator}
+          setOpenTransferToken={setOpenTransferToken}
+          setOpenTokenHistory={setOpenTokenHistory}
+          setOpenWithdrawToken={setOpenWithdrawToken}
+          setOpenICOMarketplace={setOpenICOMarketplace}
+          copyAddress={copyAddress}
+          setOpenCreateICO={setOpenCreateICO}
+        />
+      </div>
+
+      {openAllIcos && (
+        <ICOMarket
+          array={allUserICOs}
+          shortenAddress={shortenAddress}
+          handleClick={setOpenICOMarketplace}
+          currency={currency}
+        />
+      )}
       {openTokenCreator && (
         <TokenCreator
           createERC20={createERC20}
@@ -111,7 +162,7 @@ const index = () => {
           setOpenTokenHistory={setOpenTokenHistory}
         />
       )}
-      {!openCreateICO && (
+      {openCreateICO && (
         <CreateICO
           shortenAddress={shortenAddress}
           setOpenCreateICO={setOpenCreateICO}
@@ -120,10 +171,40 @@ const index = () => {
           createIcoSale={createIcoSale}
         />
       )}
-      {openICOMarketplace && <ICOMarket />}
-      {openBuyToken && <BuyToken />}
-      {openTransferToken && <TokenTransfer />}
-      {openWithdrawToken && <WidthdrawToken />}
+      {openICOMarketplace && (
+        <ICOMarket
+          array={allUserICOs}
+          shortenAddress={shortenAddress}
+          handleClick={setOpenAllIcos}
+          currency={currency}
+        />
+      )}
+      {openBuyToken && (
+        <BuyToken
+          address={address}
+          buyToken={buyToken}
+          connectWallet={connectWallet}
+          setOpenBuyToken={setOpenBuyToken}
+          buyICO={buyICO}
+          currency={currency}
+        />
+      )}
+      {openTransferToken && (
+        <TokenTransfer
+          address={address}
+          transferTokens={transferTokens}
+          connectWallet={connectWallet}
+          setOpenTransferToken={setOpenTransferToken}
+        />
+      )}
+      {openWithdrawToken && (
+        <WidthdrawToken
+          address={address}
+          withdrawToken={withdrawToken}
+          connectWallet={connectWallet}
+          setOpenWithdrawToken={setOpenWithdrawToken}
+        />
+      )}
 
       <Footer />
       {loader && <Loader />}

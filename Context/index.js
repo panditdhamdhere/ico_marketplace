@@ -215,9 +215,9 @@ export const StateContextProvider = ({ children }) => {
 
         const tokenArray = Promise.all(
           allIcoSaleToken.map(async (token) => {
-            const tokenContract = await tokenContract(token?.token);
+            const token_Contract = await tokenContract(token?.token);
 
-            const balance = await tokenContract.balanceOf(
+            const balance = await token_Contract.balanceOf(
               ICO_MARKETPLACE_ADDRESS
             );
 
@@ -253,9 +253,9 @@ export const StateContextProvider = ({ children }) => {
 
         const tokenArray = Promise.all(
           allIcoSaleToken.map(async (token) => {
-            const tokenContract = await tokenContract(token?.token);
+            const token_Contract = await tokenContract(token?.token);
 
-            const balance = await tokenContract.balanceOf(
+            const balance = await token_Contract.balanceOf(
               ICO_MARKETPLACE_ADDRESS
             );
 
@@ -305,6 +305,7 @@ export const StateContextProvider = ({ children }) => {
         setLoader(false);
         setOpenCreateICO(false);
         setRecall(recall + 1);
+        notifySuccess("Success!");
       }
     } catch (error) {
       setLoader(false);
@@ -482,6 +483,7 @@ export const StateContextProvider = ({ children }) => {
         accountBalance,
         loader,
         setLoader,
+        recall,
         currency,
         PINATA_API_KEY,
         PINATA_SECRET_KEY,

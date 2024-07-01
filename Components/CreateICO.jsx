@@ -10,6 +10,7 @@ const CreateICO = ({
   connectWallet,
   address,
   createIcoSale,
+  handleClick
 }) => {
   const [icoSale, setIcoSale] = useState({ address: "", price: "" });
 

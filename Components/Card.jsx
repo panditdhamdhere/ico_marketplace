@@ -1,6 +1,15 @@
 import React from "react";
 
-const Card = () => {
+const Card = ({
+  setOpenAllIcos,
+  setOpenTokenCreator,
+  setOpenTransferToken,
+  setOpenTokenHistory,
+  setOpenWithdrawToken,
+  setOpenICOMarketplace,
+  copyAddress,
+  setOpenCreateICO,
+}) => {
   const features = [
     {
       title: "ICO ADDRESS",
@@ -11,7 +20,7 @@ const Card = () => {
     {
       title: "Create ICO",
       description:
-        "Get Detail of ICO Contract and cpoy the ico contract address to transfer the token to ICO Contract",
+        "Get Detail of ICO Contract and copy the ico contract address to transfer the token to ICO Contract",
       btnName: "Create ICO",
     },
     {
@@ -51,8 +60,45 @@ const Card = () => {
       btnName: "Widthdraw Token",
     },
   ];
-  
-  return <div>Card</div>;
+
+  return (
+    <>
+      <div className="wrapper">
+        {features.map((feature, index) => (
+          <div key={index} className="card">
+            <p className="card-content" style={{ marginTop: "1rem" }}>
+              {feature.description}
+            </p>
+            <button
+              className="card-btn"
+              style={{ marginTop: "1rem" }}
+              onClick={() =>
+                feature.title == "Your Created ICO"
+                  ? setOpenAllIcos(true)
+                  : feature.title == "ICO Marketplace"
+                  ? setOpenICOMarketplace(true)
+                  : feature.title == "Create Token"
+                  ? setOpenTokenCreator(true)
+                  : feature.title == "History"
+                  ? setOpenTokenHistory(true)
+                  : feature.title == "Transfer Token"
+                  ? setOpenTransferToken(true)
+                  : feature.title == "Widthdraw Token"
+                  ? setOpenWithdrawToken(true)
+                  : feature.title == "ICO ADDRESS"
+                  ? copyAddress()
+                  : feature.title == "Create ICO"
+                  ? setOpenCreateICO(true)
+                  : ""
+              }
+            >
+              {feature.btnName}
+            </button>
+          </div>
+        ))}
+      </div>
+    </>
+  );
 };
 
 export default Card;
