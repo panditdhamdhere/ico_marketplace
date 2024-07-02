@@ -66,7 +66,7 @@ const Header = ({
                   : setOpenICOMarketplace(true)
               }
             >
-              ICO Marketplace
+              Created ICO
             </a>
           </li>
 
@@ -76,7 +76,7 @@ const Header = ({
                 openAllIcos ? setOpenAllIcos(false) : setOpenAllIcos(true)
               }
             >
-              Created ICO
+             ICO Marketplace
             </a>
           </li>
 

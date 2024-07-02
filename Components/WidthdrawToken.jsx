@@ -50,7 +50,7 @@ const WidthdrawToken = ({
         <div className="button-box" style={{ marginTop: "1rem" }}>
           {address ? (
             <Button
-              name="Token Transfer"
+              name="Withdraw Token"
               handleClick={() => withdrawToken(withdrawQuantity)}
             />
           ) : (

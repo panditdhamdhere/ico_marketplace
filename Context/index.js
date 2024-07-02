@@ -19,8 +19,6 @@ import {
 
 const StateContext = createContext();
 
-// console.log(icoMarketPlaceContract);
-
 export const StateContextProvider = ({ children }) => {
   // state variables
   const [address, setAddress] = useState();
@@ -128,7 +126,7 @@ export const StateContextProvider = ({ children }) => {
       if (contract.address) {
         const today = Date.now();
         let date = new Date(today);
-        const _tokenCreatedDate = date.toLocaleDateString("en-US");
+        const _tokenCreatedData = date.toLocaleDateString("en-US");
 
         const _token = {
           account: account,
@@ -137,7 +135,7 @@ export const StateContextProvider = ({ children }) => {
           symbol: symbol,
           tokenAddress: contract.address,
           transactionHash: contract.deployTransaction.hash,
-          createdAt: _tokenCreatedDate,
+          createdAt: _tokenCreatedData,
           logo: imgURL,
         };
 
@@ -329,9 +327,7 @@ export const StateContextProvider = ({ children }) => {
       const _tokenBal = await contract.getBalance(tokenAddress);
       const _tokenDetails = await contract.getTokenDetails(tokenAddress);
 
-      const availableToken = ethers.utils.formatEther(
-        _tokenBal.toLocaleDateString()
-      );
+      const availableToken = ethers.utils.formatEther(_tokenBal.toString());
 
       if (availableToken > 0) {
         const price =
@@ -460,6 +456,7 @@ export const StateContextProvider = ({ children }) => {
   return (
     <StateContext.Provider
       value={{
+        ERC20Generator,
         withdrawToken,
         transferTokens,
         buyToken,

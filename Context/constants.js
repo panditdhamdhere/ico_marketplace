@@ -16,12 +16,12 @@ export const ICO_MARKETPLACE_ABI = icoMarketPlace;
 export const PINATA_API_KEY = process.env.NEXT_PUBLIC_PINATA_API_KEY;
 export const PINATA_SECRET_KEY = process.env.NEXT_PUBLIC_PINATA_SECRET_KEY;
 
-// console.log(
-//   ERC20Generator_ABI,
-//   ERC20Generator_BYTE_CODE,
-//   ICO_MARKETPLACE_ABI,
-//   ICO_MARKETPLACE_ADDRESS
-// );
+console.log(
+  ERC20Generator_ABI,
+  ERC20Generator_BYTE_CODE,
+  ICO_MARKETPLACE_ABI,
+  ICO_MARKETPLACE_ADDRESS
+);
 
 // NETWORKS
 const networks = {
