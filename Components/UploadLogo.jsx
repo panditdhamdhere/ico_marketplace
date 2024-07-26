@@ -85,3 +85,5 @@ const UploadLogo = ({
 };
 
 export default UploadLogo;
+
+// Used Pinata
